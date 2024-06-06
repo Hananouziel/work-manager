@@ -19,6 +19,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [shifts, setShifts] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
+  const [userById, setUserById] = useState({});
 
   const refetchShifts = () => {
     setTimeout(() => {
@@ -28,36 +29,55 @@ function App() {
 
   const isLoggedIn = !!user;
   const isAdmin = user?.type === "admin";
+  const userGroup = user?.group;
 
   useEffect(() => {
     const fetchUsers = async () => {
       const response = await httpService.get("/users");
-      setAllUsers(response.data.users);
+      const allUsers = response.data.users;
+      setAllUsers(allUsers);
+      return allUsers;
     };
     const getShifts = async (userId) => {
       const response = await httpService.get(`/shifts/${userId}`);
       setShifts(response.data.shifts);
     };
 
-    const getAdminShifts = async () => {
-      const response = await httpService.get("/shifts");
-      setShifts(response.data.shifts);
+    const getAdminShifts = async (users) => {
+      const response = await httpService.get("/shifts/admin");
+      const userIdToUser = users.reduce((acc, user) => {
+        acc[user.id] = user;
+        return acc;
+      }, {});
+      setUserById(userIdToUser);
+      response.data.shifts.forEach((shift) => {
+        shift.userName = userIdToUser[shift.userId].name;
+      });
+
+      const filteredByGroup = userGroup
+        ? response.data.shifts.filter(
+            (shift) => userIdToUser[shift.userId].group === userGroup
+          )
+        : response.data.shifts;
+
+      setShifts(filteredByGroup);
     };
 
     if (!user?.id) {
       return;
     }
     if (isAdmin) {
-      getAdminShifts();
-      fetchUsers();
+      fetchUsers().then((users) => {
+        getAdminShifts(users);
+      });
     } else {
       getShifts(user.id);
     }
-  }, [isAdmin, user?.id, user]);
+  }, [isAdmin, user?.id, user, userGroup]);
 
   return (
     <>
-      <Navbar setUser={setUser} isAdmin={isAdmin} />
+      <Navbar setUser={setUser} isAdmin={isAdmin} user={user} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
@@ -76,7 +96,12 @@ function App() {
             <Route
               path="/messages"
               element={
-                <Messages user={user} isAdmin={isAdmin} allUsers={allUsers} />
+                <Messages
+                  user={user}
+                  isAdmin={isAdmin}
+                  allUsers={allUsers}
+                  userById={userById}
+                />
               }
             />
           </>

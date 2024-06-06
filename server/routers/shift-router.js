@@ -3,20 +3,34 @@ const { db } = require("../db");
 
 const shiftRouter = Router();
 
-shiftRouter.get("/", async (req, res) => {
-  // query shifts from today onwards
+const getAdminShifts = async (req, res) => {
+  const group = req.params.group || "";
+  // query shifts from today onwards, filter by group if provided
+
   const query = db
     .collection("shifts")
     .where("date", ">=", new Date(new Date().toISOString().split("T")[0]));
 
   const querySnapshot = await query.get();
 
-  const shifts = querySnapshot.docs.map((doc) => {
+  let shifts = querySnapshot.docs.map((doc) => {
     return { id: doc.id, ...doc.data() };
   });
 
+  if (group) {
+    const usersQuery = db.collection("users").where("group", "==", group);
+    const usersQuerySnapshot = await usersQuery.get();
+    const userIds = usersQuerySnapshot.docs.map((doc) => doc.id);
+
+    shifts = shifts.filter((shift) => userIds.includes(shift.userId));
+  }
+
+  console.log("shifts", shifts);
   res.json({ shifts });
-});
+};
+
+shiftRouter.get("/admin/:group", getAdminShifts);
+shiftRouter.get("/admin", getAdminShifts);
 
 shiftRouter.get("/:userId", async (req, res) => {
   const userId = req.params.userId;

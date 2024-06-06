@@ -13,7 +13,7 @@ import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
 
-export function Navbar({ setUser, isAdmin }) {
+export function Navbar({ setUser, isAdmin, user }) {
   const [state, setState] = React.useState({
     top: false,
     left: false,
@@ -99,6 +99,14 @@ export function Navbar({ setUser, isAdmin }) {
       onKeyDown={toggleDrawer(anchor, false)}
     >
       <List>
+        <Box
+          p="20px"
+          justifyContent={"center"}
+          display={"flex"}
+          textAlign={"center"}
+        >
+          {user?.name} <br /> {user?.id}
+        </Box>
         {items.map(({ name, to, onClick }, index) => {
           return (
             <ListItem key={name} disablePadding onClick={onClick}>

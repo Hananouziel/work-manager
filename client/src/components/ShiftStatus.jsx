@@ -24,6 +24,7 @@ export const ShiftStatus = ({ shifts, isAdmin, refetchShifts }) => {
 };
 
 function ShiftCard({ shift, refetchShifts, isAdmin }) {
+  console.log("shift", shift);
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [note, setNote] = useState(shift.notes);
 
@@ -63,9 +64,12 @@ function ShiftCard({ shift, refetchShifts, isAdmin }) {
 
       <Box display="flex" justifyContent="center">
         <Box>
+          <p>
+            {shift.userName} ({shift.userId})
+          </p>
           <p>משמרת שהוגשה:</p>
           <p>{SHIFTS[shift.shiftType]}</p>
-          <div>הערות:</div>
+          <div onClick={onNoteClick}>הערות:</div>
           {isEditingNote ? (
             <>
               <TextField
@@ -77,7 +81,7 @@ function ShiftCard({ shift, refetchShifts, isAdmin }) {
               </Button>
             </>
           ) : (
-            <p onClick={onNoteClick}>{note}</p>
+            <p onClick={onNoteClick}>{note} </p>
           )}
         </Box>
         <Box flex={1}>

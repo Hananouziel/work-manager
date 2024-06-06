@@ -37,7 +37,13 @@ userRouter.post("/login", async (req, res) => {
     return res.status(401).json({ message: "Invalid id or password" });
   }
 
-  res.json({ user: querySnapshot.docs[0].data() });
+  const user = querySnapshot.docs[0].data();
+  if (user.isFrozen) {
+    return res
+      .status(401)
+      .json({ message: "User is frozen, please contact your manager" });
+  }
+  res.json({ user: user });
 });
 
 userRouter.post("/attendance/exit", async (req, res) => {
@@ -122,6 +128,29 @@ userRouter.delete("/attendance/:userId", async (req, res) => {
   await userRef.update({ attendance: updatedAttendance });
 
   res.json({ message: "Attendance deleted" });
+});
+
+userRouter.delete("/:userId", async (req, res) => {
+  const userId = req.params.userId;
+
+  await db.collection("users").doc(userId).delete();
+
+  res.json({ message: "User deleted" });
+});
+
+userRouter.put("/:userId", async (req, res) => {
+  const userId = req.params.userId;
+
+  const userRef = db.collection("users").doc(userId);
+  const userDoc = await userRef.get();
+
+  if (!userDoc.exists) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  await userRef.update({ ...req.body });
+
+  res.json({ message: "User updated" });
 });
 
 userRouter.get("/", async (req, res) => {

@@ -47,7 +47,7 @@ export const ManageAttendance = () => {
             id="demo-simple-select"
             value={month}
             label="חודש"
-            onChange={(e) => setMonth(e.target.value - 1)}
+            onChange={(e) => setMonth(e.target.value)}
           >
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((shift, index) => (
               <MenuItem key={index} value={index}>

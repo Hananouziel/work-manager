@@ -10,8 +10,9 @@ import {
 import { useEffect, useState } from "react";
 import { TextareaAutosize } from "./common/TextArea";
 import { httpService } from "../api";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
-export const Messages = ({ user, isAdmin, allUsers }) => {
+export const Messages = ({ user, isAdmin, allUsers, userById }) => {
   const [topic, setTopic] = useState("");
   const [message, setMessage] = useState("");
   const [recipient, setRecipient] = useState("");
@@ -19,14 +20,27 @@ export const Messages = ({ user, isAdmin, allUsers }) => {
   const [messages, setMessages] = useState([]);
   console.log("messages", messages);
 
+  const filterMessages = (messages) => {
+    const seenMessages = getSeenMessages();
+    const filterBySeen = messages.filter(
+      (message) => !seenMessages.includes(message.id)
+    );
+    if (isAdmin) {
+      return filterBySeen.filter(
+        (message) => userById[message.userId].group === user.group
+      );
+    }
+    return filterBySeen;
+  };
+
   useEffect(() => {
     if (isAdmin) {
       httpService.get(`/messages`).then((response) => {
-        setMessages(response.data.messages);
+        setMessages(filterMessages(response.data.messages));
       });
     } else {
       httpService.get(`/messages/${user.id}`).then((response) => {
-        setMessages(response.data.messages);
+        setMessages(filterMessages(response.data.messages));
       });
     }
   }, [isAdmin, user?.id]);
@@ -47,14 +61,21 @@ export const Messages = ({ user, isAdmin, allUsers }) => {
     setTopic("");
   };
 
+  const handleDeleteMessage = async (messageId) => {
+    const seenMessages = getSeenMessages();
+    const newSeenMessages = [...seenMessages, messageId];
+    localStorage.setItem("seenMessages", JSON.stringify(newSeenMessages));
+    setMessages(filterMessages(messages));
+  };
+
   return (
     <Box p={5}>
       <h1>הודעות</h1>
       <Box>
         {messages.map((message) => (
           <Box
-            textAlign="start"
             key={message.id}
+            textAlign="start"
             border="1px solid gray"
             p={2}
             my={1}
@@ -65,6 +86,9 @@ export const Messages = ({ user, isAdmin, allUsers }) => {
               הודעה: <br />
               {message.message}
             </p>
+            <DeleteForeverIcon
+              onClick={() => handleDeleteMessage(message.id)}
+            />
           </Box>
         ))}
       </Box>
@@ -116,3 +140,6 @@ export const Messages = ({ user, isAdmin, allUsers }) => {
     </Box>
   );
 };
+function getSeenMessages() {
+  return JSON.parse(localStorage.getItem("seenMessages") ?? "[]");
+}

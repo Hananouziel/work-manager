@@ -47,24 +47,22 @@ const Day = (date, _, DayProps) => {
 };
 
 export const Calendar = ({ shifts, isAdmin, allUsers }) => {
-  console.log("allUsers", allUsers);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const shiftsMap = shifts.reduce((acc, shift) => {
+    if (shift.status !== "approved") return acc;
     const date = new Date(shift.date._seconds * 1000)
       .toISOString()
       .split("T")[0];
     acc[date] = [...(acc[date] ?? []), shift];
     return acc;
   }, {});
-  console.log("shiftsMap", shiftsMap);
 
   const selectedDayShifts = shifts.filter(
     (shift) =>
       new Date(shift.date._seconds * 1000).toISOString().split("T")[0] ===
       selectedDate
   );
-  console.log("selectedDayShifts", selectedDayShifts);
 
   return (
     <div id="calendar">
