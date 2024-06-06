@@ -6,17 +6,24 @@ const userRouter = Router();
 userRouter.post("/login", async (req, res) => {
   const { id, password } = req.body;
   console.log({ id, password });
-  res.json({ id, password });
 
   const query = db
     .collection("users")
     .where("id", "==", id)
     .where("password", "==", password);
 
-  const querySnapshot = await query.get();
-  querySnapshot.forEach((doc) => {
-    console.log(doc.id, " => ", doc.data());
+  db.collection("users").doc("123").set({
+    id: "123",
+    password: "my pass",
+    name: "my name",
   });
+
+  const querySnapshot = await query.get();
+  if (querySnapshot.docs.length === 0) {
+    return res.status(401).json({ message: "Invalid id or password" });
+  }
+
+  res.json({ user: querySnapshot.docs[0].data() });
 });
 
 module.exports = { userRouter };

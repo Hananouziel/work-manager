@@ -1,15 +1,28 @@
-const { database } = require("firebase-admin");
+const fbAdmin = require("firebase-admin");
 const { initializeApp } = require("firebase-admin/app");
+const serviceAccount = require("./service-account.json");
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAVd6A4O7hp9ooMn15cFwlzNA5P3qGTMdk",
-  authDomain: "mitnadvim-25728.firebaseapp.com",
-  projectId: "mitnadvim-25728",
-  storageBucket: "mitnadvim-25728.appspot.com",
-  messagingSenderId: "453960627271",
-  appId: "1:453960627271:web:5286466a56f4629f60ed62",
+const firebaseApp = initializeApp({
+  credential: fbAdmin.credential.cert(serviceAccount),
+  databaseURL: "https://kanban-board-bfd91.firebaseio.com",
+});
+const db = fbAdmin.firestore();
+
+module.exports = { db };
+
+const testQuery = async () => {
+  try {
+    const collectionRef = db.collection("users");
+
+    const querySnapshot = await collectionRef.get();
+    console.log("querySnapshot", querySnapshot.docs.length);
+
+    querySnapshot.forEach((doc) => {
+      console.log(doc.id, " => ", doc.data());
+    });
+  } catch (error) {
+    console.error("Error:", error.message);
+  }
 };
 
-const firebaseApp = initializeApp(firebaseConfig);
-const db = database();
-module.exports = { firebaseApp, db };
+testQuery();

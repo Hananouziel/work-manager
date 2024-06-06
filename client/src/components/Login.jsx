@@ -1,17 +1,25 @@
 import { Button, Stack, TextField } from "@mui/material";
 import { useState } from "react";
 import { httpService } from "../api";
+import { useNavigate } from "react-router-dom";
 
-export const Login = () => {
+export const Login = ({ setUser }) => {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     console.log({ id, password });
-    const response = await httpService.post("/users/login", { id, password });
-    console.log(response);
+    try {
+      const response = await httpService.post("/users/login", { id, password });
+      setUser(response.data.user);
+      navigate("/calendar");
+    } catch (error) {
+      console.log("error", error);
+      alert(error.response.data.message);
+    }
   };
 
   return (
