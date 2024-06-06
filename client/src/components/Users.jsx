@@ -12,14 +12,14 @@ import { httpService } from "../api";
 
 export const Users = () => {
   const [allUsers, setAllUsers] = useState([]);
-  console.log("allUsers", allUsers);
+
   useEffect(() => {
     const fetchUsers = async () => {
       const response = await httpService.get("/users");
       setAllUsers(response.data.users);
     };
     fetchUsers();
-  });
+  }, []);
 
   return (
     <div>

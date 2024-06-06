@@ -46,8 +46,13 @@ export function Navbar({ setUser, isAdmin }) {
     name: "נוכחות",
     to: "/attendance",
   };
+  const calendar = {
+    name: "לוח שנה",
+    to: "/calendar",
+  };
   const items = isAdmin
     ? [
+        calendar,
         {
           name: "משמרות שהוגשו",
           to: "/shifts-approval",

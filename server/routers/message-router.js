@@ -15,11 +15,22 @@ messageRouter.post("/", async (req, res) => {
 messageRouter.get("/", async (req, res) => {
   const messages = [];
   const querySnapshot = await db.collection("messages").get();
+  const users = await db.collection("users").get();
+  const usersData = [];
+
+  users.forEach((user) => {
+    usersData.push(user.data());
+  });
 
   querySnapshot.forEach((doc) => {
     const data = doc.data();
     if (!data.recipient) {
-      messages.push({ id: doc.id, ...data });
+      messages.push({
+        id: doc.id,
+        ...data,
+        senderName: usersData.find((user) => user.id === doc.data().userId)
+          .name,
+      });
     }
   });
 

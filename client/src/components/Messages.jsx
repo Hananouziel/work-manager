@@ -11,21 +11,16 @@ import { useEffect, useState } from "react";
 import { TextareaAutosize } from "./common/TextArea";
 import { httpService } from "../api";
 
-export const Messages = ({ user, isAdmin }) => {
+export const Messages = ({ user, isAdmin, allUsers }) => {
   const [topic, setTopic] = useState("");
   const [message, setMessage] = useState("");
   const [recipient, setRecipient] = useState("");
-  const [allUsers, setAllUsers] = useState([]);
+
   const [messages, setMessages] = useState([]);
   console.log("messages", messages);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      const response = await httpService.get("/users");
-      setAllUsers(response.data.users);
-    };
     if (isAdmin) {
-      fetchUsers();
       httpService.get(`/messages`).then((response) => {
         setMessages(response.data.messages);
       });

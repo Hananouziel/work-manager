@@ -18,6 +18,7 @@ import { Users } from "./components/Users";
 function App() {
   const [user, setUser] = useState(null);
   const [shifts, setShifts] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
 
   const refetchShifts = () => {
     setTimeout(() => {
@@ -29,6 +30,10 @@ function App() {
   const isAdmin = user?.type === "admin";
 
   useEffect(() => {
+    const fetchUsers = async () => {
+      const response = await httpService.get("/users");
+      setAllUsers(response.data.users);
+    };
     const getShifts = async (userId) => {
       const response = await httpService.get(`/shifts/${userId}`);
       setShifts(response.data.shifts);
@@ -44,6 +49,7 @@ function App() {
     }
     if (isAdmin) {
       getAdminShifts();
+      fetchUsers();
     } else {
       getShifts(user.id);
     }
@@ -57,10 +63,21 @@ function App() {
         <Route path="/login" element={<Login setUser={setUser} />} />
         {isLoggedIn && (
           <>
-            <Route path="/calendar" element={<Calendar />} />
+            <Route
+              path="/calendar"
+              element={
+                <Calendar
+                  shifts={shifts}
+                  isAdmin={isAdmin}
+                  allUsers={allUsers}
+                />
+              }
+            />
             <Route
               path="/messages"
-              element={<Messages user={user} isAdmin={isAdmin} />}
+              element={
+                <Messages user={user} isAdmin={isAdmin} allUsers={allUsers} />
+              }
             />
           </>
         )}
@@ -84,7 +101,7 @@ function App() {
         )}
         {isLoggedIn && !isAdmin && (
           <>
-            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/calendar" element={<Calendar shifts={shifts} />} />
             <Route
               path="/shifts"
               element={<Shifts user={user} refetchShifts={refetchShifts} />}

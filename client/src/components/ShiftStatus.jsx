@@ -1,6 +1,5 @@
 import { Box, Button, TextField } from "@mui/material";
-import { SHIFTS } from "./Shifts";
-import { STATUSES, hebrewDayNames } from "../constants";
+import { SHIFTS, STATUSES, hebrewDayNames } from "../constants";
 import { useState } from "react";
 import { httpService } from "../api";
 

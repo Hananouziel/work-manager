@@ -13,14 +13,8 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { httpService } from "../api";
-import { hebrewDayNames } from "../constants";
+import { SHIFTS, hebrewDayNames } from "../constants";
 import { TextareaAutosize } from "./common/TextArea";
-
-export const SHIFTS = [
-  "משמרת בוקר 8:00-13:00",
-  "משמרת צהריים 15:00-20:00",
-  "משמרת ערב 22:00-03:00",
-];
 
 export const Shifts = ({ user, refetchShifts }) => {
   const [date, setDate] = useState(dayjs(new Date().toISOString()));
