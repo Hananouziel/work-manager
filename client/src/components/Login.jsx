@@ -1,4 +1,4 @@
-import { Button, Stack, TextField } from "@mui/material";
+import { Box, Button, Stack, TextField } from "@mui/material";
 import { useState } from "react";
 import { httpService } from "../api";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +23,7 @@ export const Login = ({ setUser }) => {
   };
 
   return (
-    <div id="login">
+    <Box sx={{ p: "20px" }} id="login">
       <h1>כניסה</h1>
       <Stack component="form" gap="10px" onSubmit={handleLogin}>
         <TextField
@@ -48,6 +48,6 @@ export const Login = ({ setUser }) => {
           התחבר
         </Button>
       </Stack>
-    </div>
+    </Box>
   );
 };

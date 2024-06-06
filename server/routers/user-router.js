@@ -12,12 +12,6 @@ userRouter.post("/login", async (req, res) => {
     .where("id", "==", id)
     .where("password", "==", password);
 
-  db.collection("users").doc("123").set({
-    id: "123",
-    password: "my pass",
-    name: "my name",
-  });
-
   const querySnapshot = await query.get();
   if (querySnapshot.docs.length === 0) {
     return res.status(401).json({ message: "Invalid id or password" });

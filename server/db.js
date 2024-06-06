@@ -12,7 +12,7 @@ module.exports = { db };
 
 const testQuery = async () => {
   try {
-    const collectionRef = db.collection("users");
+    const collectionRef = db.collection("shifts");
 
     const querySnapshot = await collectionRef.get();
     console.log("querySnapshot", querySnapshot.docs.length);
@@ -25,4 +25,10 @@ const testQuery = async () => {
   }
 };
 
-testQuery();
+// db.collection("users").doc("123").set({
+//   id: "123",
+//   password: "my pass",
+//   name: "my name",
+// });
+
+// testQuery();

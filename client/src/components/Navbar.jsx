@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
 import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
+// import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -40,6 +40,14 @@ export function Navbar() {
     {
       name: "הגשת משמרות",
       to: "/shifts",
+    },
+    {
+      name: "סטטוס משמרות",
+      to: "/shift-status",
+    },
+    {
+      name: "נוכחות",
+      to: "/attendance",
     },
   ];
 
