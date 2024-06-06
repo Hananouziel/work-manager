@@ -5,42 +5,64 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Box } from "@mui/material";
+import { Box, MenuItem, Select } from "@mui/material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 const border = { border: "1px solid gray" };
 
 export const ManageAttendance = () => {
   const [attendance, setAttendance] = useState([]);
+  const [month, setMonth] = useState(new Date().getMonth());
   console.log("attendance", attendance);
 
-  useEffect(() => {
-    const getAttendance = async () => {
-      const response = await httpService.get(`/users/attendance`);
-      setAttendance(response.data.attendance);
-    };
+  const getAttendance = async () => {
+    const response = await httpService.get(`/users/attendance`);
+    setAttendance(response.data.attendance);
+  };
 
+  useEffect(() => {
     getAttendance();
   }, []);
 
-  const handleDeleteLine = (userId, timestamp1, timestamp2) => {
+  const handleDeleteLine = async (userId, timestamp1, timestamp2) => {
     console.log("timestamp1", timestamp1);
     console.log("timestamp2", timestamp2);
-    httpService.delete(`/users/attendance/${userId}`, {
+
+    await httpService.delete(`/users/attendance/${userId}`, {
       data: {
         timestamp1,
         timestamp2,
       },
     });
+
+    getAttendance();
   };
 
   return (
     <div>
       <h1>ניהול נוכחות</h1>
       <div>
+        <div>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={month}
+            label="חודש"
+            onChange={(e) => setMonth(e.target.value - 1)}
+          >
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((shift, index) => (
+              <MenuItem key={index} value={index}>
+                {shift}
+              </MenuItem>
+            ))}
+          </Select>
+        </div>
         {attendance.map((user) => {
           const days = {};
           for (const report of user.attendance) {
             const date = new Date(report.date._seconds * 1000);
+            if (date.getMonth() !== month) {
+              continue;
+            }
             const day = date.getDate();
             days[day] = [...(days[day] ?? [])];
             days[day].push(report);

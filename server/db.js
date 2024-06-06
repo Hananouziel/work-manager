@@ -25,10 +25,23 @@ const testQuery = async () => {
   }
 };
 
-// db.collection("users").doc("123").set({
-//   id: "123",
+const deleteAllMessages = async () => {
+  const collectionRef = db.collection("messages");
+
+  const querySnapshot = await collectionRef.get();
+
+  querySnapshot.forEach(async (doc) => {
+    await db.collection("messages").doc(doc.id).delete();
+  });
+};
+
+// deleteAllMessages();
+// testQuery();
+
+// db.collection("users").doc("1111").set({
+//   id: "1111",
 //   password: "my pass",
-//   name: "my name",
+//   name: "אלי",
 //   type: "user",
 // });
 
@@ -38,5 +51,3 @@ const testQuery = async () => {
 //   name: "my name",
 //   type: "admin",
 // });
-
-// testQuery();

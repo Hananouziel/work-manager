@@ -52,6 +52,14 @@ export function Navbar({ setUser, isAdmin }) {
           name: "משמרות שהוגשו",
           to: "/shifts-approval",
         },
+        {
+          name: "הוספת משתמש",
+          to: "/add-user",
+        },
+        {
+          name: "משתמשים",
+          to: "/users",
+        },
         attendance,
         messages,
         logout,

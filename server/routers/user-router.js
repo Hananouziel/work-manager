@@ -3,6 +3,26 @@ const { db } = require("../db");
 
 const userRouter = Router();
 
+userRouter.post("/", async (req, res) => {
+  const { fullName, id, password, role } = req.body;
+
+  const userRef = db.collection("users").doc(id);
+  const userDoc = await userRef.get();
+
+  if (userDoc.exists) {
+    return res.status(409).json({ message: "User already exists" });
+  }
+
+  await userRef.set({
+    name: fullName,
+    id,
+    password,
+    type: role,
+  });
+
+  res.json({ message: "User created" });
+});
+
 userRouter.post("/login", async (req, res) => {
   const { id, password } = req.body;
   console.log({ id, password });
@@ -85,16 +105,34 @@ userRouter.delete("/attendance/:userId", async (req, res) => {
   console.log("timestamp1", timestamp1);
   console.log("userId", userId);
 
-  // const userRef = db.collection("users").doc(userId);
-  // const userDoc = await userRef.get();
+  const userRef = db.collection("users").doc(userId);
+  const userDoc = await userRef.get();
 
-  // if (!userDoc.exists) {
-  //   return res.status(404).json({ message: "User not found" });
-  // }
+  if (!userDoc.exists) {
+    return res.status(404).json({ message: "User not found" });
+  }
 
-  // await userRef.update({ attendance: [] });
+  const updatedAttendance = userDoc
+    .data()
+    .attendance.filter(
+      (report) =>
+        report.date._seconds !== timestamp1 &&
+        report.date._seconds !== timestamp2
+    );
+  await userRef.update({ attendance: updatedAttendance });
 
   res.json({ message: "Attendance deleted" });
+});
+
+userRouter.get("/", async (req, res) => {
+  const users = await db.collection("users").get();
+  const usersData = [];
+
+  users.forEach((user) => {
+    usersData.push(user.data());
+  });
+
+  res.json({ users: usersData });
 });
 
 module.exports = { userRouter };

@@ -7,7 +7,7 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TextareaAutosize } from "./common/TextArea";
 import { httpService } from "../api";
 
@@ -15,20 +15,64 @@ export const Messages = ({ user, isAdmin }) => {
   const [topic, setTopic] = useState("");
   const [message, setMessage] = useState("");
   const [recipient, setRecipient] = useState("");
+  const [allUsers, setAllUsers] = useState([]);
+  const [messages, setMessages] = useState([]);
+  console.log("messages", messages);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const response = await httpService.get("/users");
+      setAllUsers(response.data.users);
+    };
+    if (isAdmin) {
+      fetchUsers();
+      httpService.get(`/messages`).then((response) => {
+        setMessages(response.data.messages);
+      });
+    } else {
+      httpService.get(`/messages/${user.id}`).then((response) => {
+        setMessages(response.data.messages);
+      });
+    }
+  }, [isAdmin, user?.id]);
 
   const handleSendClick = async () => {
-    console.log({ topic, message });
-    await httpService.post("/messages", {
+    const messageBody = {
       userId: user.id,
       topic,
       message,
-    });
+    };
+
+    if (isAdmin) {
+      messageBody.recipient = recipient;
+    }
+
+    await httpService.post("/messages", messageBody);
+    setMessage("");
+    setTopic("");
   };
 
   return (
     <Box p={5}>
       <h1>הודעות</h1>
-      <Box></Box>
+      <Box>
+        {messages.map((message) => (
+          <Box
+            textAlign="start"
+            key={message.id}
+            border="1px solid gray"
+            p={2}
+            my={1}
+          >
+            <div>מאת: {message.senderName}</div>
+            <h3>נושא {message.topic}</h3>
+            <p>
+              הודעה: <br />
+              {message.message}
+            </p>
+          </Box>
+        ))}
+      </Box>
       <Box display="flex" flexDirection="column" gap="10px" pt="5px">
         {isAdmin && (
           <FormControl fullWidth>
@@ -37,12 +81,18 @@ export const Messages = ({ user, isAdmin }) => {
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={recipient}
-              label="משמרת"
+              label="נמען"
               onChange={(e) => setRecipient(e.target.value)}
             >
-              {["1", "2"].map((shift, index) => (
-                <MenuItem key={index} value={index}>
-                  {shift}
+              {[
+                { label: "כולם", value: "all" },
+                ...allUsers.map((user) => ({
+                  label: user.name,
+                  value: user.id,
+                })),
+              ].map(({ label, value }, index) => (
+                <MenuItem key={index} value={value}>
+                  {label}
                 </MenuItem>
               ))}
             </Select>

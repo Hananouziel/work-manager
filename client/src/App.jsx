@@ -12,6 +12,8 @@ import { Attendance } from "./components/Attendance";
 import { Messages } from "./components/Messages";
 import { About } from "./components/About";
 import { ManageAttendance } from "./components/ManageAttendance";
+import { AddUser } from "./components/AddUser";
+import { Users } from "./components/Users";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -56,7 +58,10 @@ function App() {
         {isLoggedIn && (
           <>
             <Route path="/calendar" element={<Calendar />} />
-            <Route path="/messages" element={<Messages user={user} />} />
+            <Route
+              path="/messages"
+              element={<Messages user={user} isAdmin={isAdmin} />}
+            />
           </>
         )}
         {isAdmin && (
@@ -72,6 +77,8 @@ function App() {
                 />
               }
             />
+            <Route path="/add-user" element={<AddUser />} />
+            <Route path="/users" element={<Users />} />
             <Route path="/attendance" element={<ManageAttendance />} />
           </>
         )}
