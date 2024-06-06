@@ -20,4 +20,41 @@ userRouter.post("/login", async (req, res) => {
   res.json({ user: querySnapshot.docs[0].data() });
 });
 
+userRouter.post("/attendance/exit", async (req, res) => {
+  const { userId, note } = req.body;
+
+  const userRef = db.collection("users").doc(userId);
+  const userDoc = await userRef.get();
+  if (!userDoc.exists) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  const attendance = userDoc.data().attendance || [];
+
+  attendance.push({ type: "exit", note, date: new Date() });
+  await userRef.update({ attendance });
+
+  res.json({ message: "Attendance exit saved" });
+});
+
+userRouter.post("/attendance/enter", async (req, res) => {
+  const { userId } = req.body;
+
+  const userRef = db.collection("users").doc(userId);
+
+  const userDoc = await userRef.get();
+
+  if (!userDoc.exists) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  const attendance = userDoc.data().attendance || [];
+
+  attendance.push({ type: "enter", date: new Date() });
+
+  await userRef.update({ attendance });
+
+  res.json({ message: "Attendance enter saved" });
+});
+
 module.exports = { userRouter };

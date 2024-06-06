@@ -3,6 +3,21 @@ const { db } = require("../db");
 
 const shiftRouter = Router();
 
+shiftRouter.get("/", async (req, res) => {
+  // query shifts from today onwards
+  const query = db
+    .collection("shifts")
+    .where("date", ">=", new Date(new Date().toISOString().split("T")[0]));
+
+  const querySnapshot = await query.get();
+
+  const shifts = querySnapshot.docs.map((doc) => {
+    return { id: doc.id, ...doc.data() };
+  });
+
+  res.json({ shifts });
+});
+
 shiftRouter.get("/:userId", async (req, res) => {
   const userId = req.params.userId;
 
@@ -34,6 +49,18 @@ shiftRouter.post("/", async (req, res) => {
   });
 
   res.json({ message: "Shift added successfully" });
+});
+
+shiftRouter.put("/:shiftId", async (req, res) => {
+  const shiftId = req.params.shiftId;
+
+  const shiftRef = db.collection("shifts").doc(shiftId);
+
+  await shiftRef.update({
+    ...req.body,
+  });
+
+  res.json({ message: "Shift updated successfully" });
 });
 
 module.exports = { shiftRouter };

@@ -30,5 +30,11 @@ const testQuery = async () => {
 //   password: "my pass",
 //   name: "my name",
 // });
+db.collection("users").doc("admin").set({
+  id: "admin",
+  password: "admin",
+  name: "my name",
+  type: "admin",
+});
 
 // testQuery();

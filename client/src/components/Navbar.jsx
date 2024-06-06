@@ -13,7 +13,7 @@ import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
 
-export function Navbar() {
+export function Navbar({ setUser, isAdmin }) {
   const [state, setState] = React.useState({
     top: false,
     left: false,
@@ -32,24 +32,49 @@ export function Navbar() {
     setState({ ...state, [anchor]: open });
   };
 
-  const items = [
-    {
-      name: "לוח שנה",
-      to: "/calendar",
-    },
-    {
-      name: "הגשת משמרות",
-      to: "/shifts",
-    },
-    {
-      name: "סטטוס משמרות",
-      to: "/shift-status",
-    },
-    {
-      name: "נוכחות",
-      to: "/attendance",
-    },
-  ];
+  const logout = {
+    name: "התנתק",
+    to: "/login",
+    onClick: () => setUser(null),
+  };
+
+  const messages = {
+    name: "הודעות",
+    to: "/messages",
+  };
+  const items = isAdmin
+    ? [
+        {
+          name: "משמרות שהוגשו",
+          to: "/shifts-approval",
+        },
+        messages,
+        logout,
+      ]
+    : [
+        {
+          name: "לוח שנה",
+          to: "/calendar",
+        },
+        {
+          name: "הגשת משמרות",
+          to: "/shifts",
+        },
+        {
+          name: "סטטוס משמרות",
+          to: "/shift-status",
+        },
+        {
+          name: "נוכחות",
+          to: "/attendance",
+        },
+        messages,
+        {
+          name: "אודות",
+          to: "/about",
+        },
+        logout,
+      ];
 
   const list = (anchor) => (
     <Box
@@ -59,18 +84,20 @@ export function Navbar() {
       onKeyDown={toggleDrawer(anchor, false)}
     >
       <List>
-        {items.map(({ name, to }, index) => (
-          <ListItem key={name} disablePadding>
-            <Link to={to}>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={name} />
-              </ListItemButton>
-            </Link>
-          </ListItem>
-        ))}
+        {items.map(({ name, to, onClick }, index) => {
+          return (
+            <ListItem key={name} disablePadding onClick={onClick}>
+              <Link to={to}>
+                <ListItemButton>
+                  <ListItemIcon>
+                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  </ListItemIcon>
+                  <ListItemText primary={name} />
+                </ListItemButton>
+              </Link>
+            </ListItem>
+          );
+        })}
       </List>
       {/* <Divider />
       <List>

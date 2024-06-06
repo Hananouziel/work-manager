@@ -9,6 +9,8 @@ import { Shifts } from "./components/Shifts";
 import { ShiftStatus } from "./components/ShiftStatus";
 import { httpService } from "./api";
 import { Attendance } from "./components/Attendance";
+import { Messages } from "./components/Messages";
+import { About } from "./components/About";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -21,6 +23,7 @@ function App() {
   };
 
   const isLoggedIn = !!user;
+  const isAdmin = user?.type === "admin";
 
   useEffect(() => {
     const getShifts = async (userId) => {
@@ -28,18 +31,49 @@ function App() {
       setShifts(response.data.shifts);
     };
 
-    if (user?.id) {
+    const getAdminShifts = async () => {
+      const response = await httpService.get("/shifts");
+      setShifts(response.data.shifts);
+    };
+
+    if (!user?.id) {
+      return;
+    }
+    if (isAdmin) {
+      getAdminShifts();
+    } else {
       getShifts(user.id);
     }
-  }, [user?.id]);
+  }, [isAdmin, user?.id, user]);
 
   return (
     <>
-      <Navbar />
+      <Navbar setUser={setUser} isAdmin={isAdmin} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
         {isLoggedIn && (
+          <>
+            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/messages" element={<Messages user={user} />} />
+          </>
+        )}
+        {isAdmin && (
+          <>
+            <Route
+              path="/shifts-approval"
+              element={
+                <ShiftStatus
+                  user={user}
+                  refetchShifts={refetchShifts}
+                  shifts={shifts}
+                  isAdmin={isAdmin}
+                />
+              }
+            />
+          </>
+        )}
+        {isLoggedIn && !isAdmin && (
           <>
             <Route path="/calendar" element={<Calendar />} />
             <Route
@@ -51,6 +85,7 @@ function App() {
               element={<ShiftStatus shifts={shifts} />}
             />
             <Route path="/attendance" element={<Attendance user={user} />} />
+            <Route path="/about" element={<About user={user} />} />
           </>
         )}
         <Route path="/*" element={<Login setUser={setUser} />} />
