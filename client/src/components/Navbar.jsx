@@ -42,12 +42,17 @@ export function Navbar({ setUser, isAdmin }) {
     name: "הודעות",
     to: "/messages",
   };
+  const attendance = {
+    name: "נוכחות",
+    to: "/attendance",
+  };
   const items = isAdmin
     ? [
         {
           name: "משמרות שהוגשו",
           to: "/shifts-approval",
         },
+        attendance,
         messages,
         logout,
       ]
@@ -64,10 +69,7 @@ export function Navbar({ setUser, isAdmin }) {
           name: "סטטוס משמרות",
           to: "/shift-status",
         },
-        {
-          name: "נוכחות",
-          to: "/attendance",
-        },
+        attendance,
         messages,
         {
           name: "אודות",

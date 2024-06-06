@@ -29,12 +29,14 @@ const testQuery = async () => {
 //   id: "123",
 //   password: "my pass",
 //   name: "my name",
+//   type: "user",
 // });
-db.collection("users").doc("admin").set({
-  id: "admin",
-  password: "admin",
-  name: "my name",
-  type: "admin",
-});
+
+// db.collection("users").doc("admin").set({
+//   id: "admin",
+//   password: "admin",
+//   name: "my name",
+//   type: "admin",
+// });
 
 // testQuery();

@@ -57,4 +57,44 @@ userRouter.post("/attendance/enter", async (req, res) => {
   res.json({ message: "Attendance enter saved" });
 });
 
+userRouter.get("/attendance", async (req, res) => {
+  // get all users attendance
+  // const users = await db.collection("users").where("type", "!=", "admin").get();
+
+  // get all users except the admin
+  const users = await db.collection("users").where("type", "==", "user").get();
+
+  const attendance = [];
+
+  users.forEach((user) => {
+    const userData = user.data();
+    attendance.push({
+      id: user.id,
+      name: userData.name,
+      attendance: userData.attendance ?? [],
+    });
+  });
+
+  res.json({ attendance });
+});
+
+userRouter.delete("/attendance/:userId", async (req, res) => {
+  const userId = req.params.userId;
+  const { timestamp1, timestamp2 } = req.body;
+  console.log("timestamp2", timestamp2);
+  console.log("timestamp1", timestamp1);
+  console.log("userId", userId);
+
+  // const userRef = db.collection("users").doc(userId);
+  // const userDoc = await userRef.get();
+
+  // if (!userDoc.exists) {
+  //   return res.status(404).json({ message: "User not found" });
+  // }
+
+  // await userRef.update({ attendance: [] });
+
+  res.json({ message: "Attendance deleted" });
+});
+
 module.exports = { userRouter };

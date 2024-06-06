@@ -24,7 +24,7 @@ export const ShiftStatus = ({ shifts, isAdmin, refetchShifts }) => {
   );
 };
 
-function ShiftCard({ shift, refetchShifts }) {
+function ShiftCard({ shift, refetchShifts, isAdmin }) {
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [note, setNote] = useState(shift.notes);
 
@@ -83,20 +83,22 @@ function ShiftCard({ shift, refetchShifts }) {
         </Box>
         <Box flex={1}>
           <p>{STATUSES[shift.status]}</p>
-          <Box
-            flex={1}
-            gap="5px"
-            display="flex"
-            justifyContent={"center"}
-            alignItems={"center"}
-          >
-            <Button variant="contained" onClick={onApprove}>
-              אשר
-            </Button>
-            <Button variant="contained" onClick={onReject}>
-              דחה
-            </Button>
-          </Box>
+          {isAdmin && (
+            <Box
+              flex={1}
+              gap="5px"
+              display="flex"
+              justifyContent={"center"}
+              alignItems={"center"}
+            >
+              <Button variant="contained" onClick={onApprove}>
+                אשר
+              </Button>
+              <Button variant="contained" onClick={onReject}>
+                דחה
+              </Button>
+            </Box>
+          )}
         </Box>
       </Box>
     </Box>

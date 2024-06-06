@@ -11,6 +11,7 @@ import { httpService } from "./api";
 import { Attendance } from "./components/Attendance";
 import { Messages } from "./components/Messages";
 import { About } from "./components/About";
+import { ManageAttendance } from "./components/ManageAttendance";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -71,6 +72,7 @@ function App() {
                 />
               }
             />
+            <Route path="/attendance" element={<ManageAttendance />} />
           </>
         )}
         {isLoggedIn && !isAdmin && (
